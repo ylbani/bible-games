@@ -3,9 +3,9 @@
 // ====================================
 
 import { db } from '../../core/firebase.js';
-import { collection, addDoc, onSnapshot, updateDoc, doc, query, where, getDocs, deleteDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, onSnapshot, updateDoc, doc, query, where, getDocs, deleteDoc, serverTimestamp, query as fsQuery, orderBy, limit } from "firebase/firestore";
 import { questions } from '../../data/questions.js';
-import { getPlayer, addCoins, addXP } from '../../core/player.js';
+import { getPlayer, addCoins, addXP, addLeaguePoints, syncPlayerWithFirestore } from '../../core/player.js';
 import { showToast, shuffleArray } from '../../core/ui-utils.js';
 import { navigate } from '../../core/router.js';
 
@@ -46,7 +46,24 @@ export function renderBibleBattle(container) {
         </div>
         <h3 class="text-center mt-md">Buscando Oponente...</h3>
         <p class="text-muted text-center text-sm">Emparejando en la arena de fe</p>
-        <button class="btn btn-secondary btn-block mt-lg" id="btn-cancel-match">Cancelar</button>
+        
+        <div class="bb-matchmaking-actions">
+          <button class="btn btn-secondary btn-block mt-lg" id="btn-cancel-match">Cancelar</button>
+          <button class="btn btn-outline btn-block mt-sm" id="btn-open-leaderboard">🏆 Ver Clasificación</button>
+        </div>
+
+        <!-- Modal Leaderboard -->
+        <div id="bb-leaderboard-modal" class="modal-overlay" style="display:none;">
+          <div class="modal-content glass">
+            <span class="modal-close" id="close-leaderboard">&times;</span>
+            <div class="modal-header">
+              <h3>🏆 Ranking Global</h3>
+            </div>
+            <div class="modal-body" id="leaderboard-list">
+              <p class="text-center text-muted">Cargando clasificación...</p>
+            </div>
+          </div>
+        </div>
       </div>
     `;
 
@@ -55,58 +72,111 @@ export function renderBibleBattle(container) {
       navigate('home');
     });
 
+    document.getElementById('btn-open-leaderboard')?.addEventListener('click', () => {
+      document.getElementById('bb-leaderboard-modal').style.display = 'flex';
+      loadLeaderboard();
+    });
+
+    document.getElementById('close-leaderboard')?.addEventListener('click', () => {
+      document.getElementById('bb-leaderboard-modal').style.display = 'none';
+    });
+
     tryMatchmake();
+  }
+
+  async function loadLeaderboard() {
+    const listEl = document.getElementById('leaderboard-list');
+    if (!listEl) return;
+
+    try {
+      const q = fsQuery(collection(db, "bb_users"), orderBy("leaguePoints", "desc"), limit(10));
+      const snapshot = await getDocs(q);
+      
+      if (snapshot.empty) {
+        listEl.innerHTML = '<p class="text-center text-muted">Aún no hay clasificados. ¡Sé el primero!</p>';
+        return;
+      }
+
+      listEl.innerHTML = `
+        <div class="ranking-list">
+          ${snapshot.docs.map((doc, index) => {
+            const u = doc.data();
+            return `
+              <div class="ranking-item ${u.uid === myId ? 'me' : ''}">
+                <div class="rank-pos">${index + 1}</div>
+                <div class="rank-avatar">${u.avatar || '👤'}</div>
+                <div class="rank-info">
+                  <div class="rank-name">${u.name}</div>
+                  <div class="rank-league">${u.league || 'Pescador'}</div>
+                </div>
+                <div class="rank-points">${u.leaguePoints || 0} PL</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    } catch (e) {
+      console.error(e);
+      listEl.innerHTML = '<p class="text-center text-danger">Error cargando ranking.</p>';
+    }
   }
 
   async function tryMatchmake() {
     const queueRef = collection(db, "bb_queue");
     const q = query(queueRef, where("status", "==", "waiting"), where("uid", "!=", myId));
-    const snapshot = await getDocs(q);
+    try {
+      const snapshot = await getDocs(q);
 
-    if (!snapshot.empty) {
-      // 1. Encontramos un rival esperando
-      const rivalDoc = snapshot.docs[0];
-      const rival = rivalDoc.data();
-      myRole = 'p2';
+      if (!snapshot.empty) {
+        // 1. Encontramos un rival esperando
+        const rivalDoc = snapshot.docs[0];
+        const rival = rivalDoc.data();
+        myRole = 'p2';
 
-      // Crear Partida
-      const allQs = shuffleArray([...questions.easy, ...questions.medium]).slice(0, 5);
-      const matchRef = await addDoc(collection(db, "bb_matches"), {
-        status: 'starting',
-        p1: { uid: rival.uid, name: rival.name, avatar: rival.avatar, score: 0, currentQ: 0, lastAnswered: -1 },
-        p2: { uid: myId, name: player.name, avatar: player.avatar, score: 0, currentQ: 0, lastAnswered: -1 },
-        questions: allQs,
-        startTime: serverTimestamp()
-      });
+        // Crear Partida
+        const allQs = shuffleArray([...questions.easy, ...questions.medium]).slice(0, 5);
+        const matchRef = await addDoc(collection(db, "bb_matches"), {
+          status: 'starting',
+          p1: { uid: rival.uid, name: rival.name, avatar: rival.avatar, score: 0, currentQ: 0, lastAnswered: -1 },
+          p2: { uid: myId, name: player.name, avatar: player.avatar, score: 0, currentQ: 0, lastAnswered: -1 },
+          questions: allQs,
+          startTime: serverTimestamp()
+        });
 
-      // Actualizar ticket del rival para que se mueva a la partida
-      await updateDoc(doc(db, "bb_queue", rivalDoc.id), {
-        status: 'matched',
-        matchId: matchRef.id
-      });
+        // Actualizar ticket del rival para que se mueva a la partida
+        await updateDoc(doc(db, "bb_queue", rivalDoc.id), {
+          status: 'matched',
+          matchId: matchRef.id
+        });
 
-      startMatch(matchRef.id);
-    } else {
-      // 2. Nadie esperando, nos listamos nosotros
-      myRole = 'p1';
-      const myTicketRef = await addDoc(collection(db, "bb_queue"), {
-        uid: myId,
-        name: player.name,
-        avatar: player.avatar,
-        status: 'waiting',
-        createdAt: serverTimestamp()
-      });
+        startMatch(matchRef.id);
+      } else {
+        // 2. Nadie esperando, nos listamos nosotros
+        myRole = 'p1';
+        const myTicketRef = await addDoc(collection(db, "bb_queue"), {
+          uid: myId,
+          name: player.name,
+          avatar: player.avatar,
+          status: 'waiting',
+          createdAt: serverTimestamp()
+        });
 
-      // Escuchar si alguien nos empareja
-      unsubscribeQueue = onSnapshot(doc(db, "bb_queue", myTicketRef.id), (docSnapshot) => {
-        if (docSnapshot.exists() && docSnapshot.data().status === 'matched') {
-          const mId = docSnapshot.data().matchId;
-          unsubscribeQueue();
-          // Eliminar ticket
-          deleteDoc(myTicketRef);
-          startMatch(mId);
-        }
-      });
+        // Escuchar si alguien nos empareja
+        unsubscribeQueue = onSnapshot(doc(db, "bb_queue", myTicketRef.id), (docSnapshot) => {
+          if (docSnapshot.exists() && docSnapshot.data().status === 'matched') {
+            const mId = docSnapshot.data().matchId;
+            unsubscribeQueue();
+            // Eliminar ticket
+            deleteDoc(myTicketRef);
+            startMatch(mId);
+          }
+        });
+      }
+    } catch (error) {
+       console.error("Matchmaking error:", error);
+       showToast("Error de conexión: " + error.message, "danger");
+       // Volver atrás o detener radar
+       setTimeout(() => navigate('home'), 3000);
     }
   }
 
@@ -278,7 +348,13 @@ export function renderBibleBattle(container) {
     if (won) {
       addCoins(100);
       addXP(50);
+      addLeaguePoints(25);
+    } else if (!tie) {
+      addLeaguePoints(-10); // Restar puntos si pierde
     }
+
+    // Sync final stats
+    syncPlayerWithFirestore();
 
     container.innerHTML = `
       <div class="game-results">
@@ -292,10 +368,11 @@ export function renderBibleBattle(container) {
 
         <div class="results-stats">
           <p class="text-secondary">Rival: <b>${rivalData.name}</b> (${rivalData.score} pts)</p>
+          <div class="bb-league-badge mt-sm">${player.league}</div>
         </div>
 
         <div class="results-rewards">
-          ${won ? `<div class="reward-item">🪙 +100 monedas</div><div class="reward-item">⭐ +50 XP</div>` : '<p class="text-sm">¡Continúa entrenando tu conocimiento!</p>'}
+          ${won ? `<div class="reward-item">🪙 +100 monedas</div><div class="reward-item">⭐ +50 XP</div><div class="reward-item">🏆 +25 PL</div>` : tie ? '<p class="text-sm">¡Buen combate!</p>' : '<div class="reward-item">❌ -10 PL</div>'}
         </div>
 
         <div class="results-actions">

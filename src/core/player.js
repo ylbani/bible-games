@@ -141,3 +141,41 @@ export function updateCoinDisplay() {
     el.textContent = p.coins;
   }
 }
+
+// === Bible Battle League & Sync ===
+
+export function addLeaguePoints(amount) {
+  if (!player) getPlayer();
+  player.leaguePoints = (player.leaguePoints || 0) + amount;
+  if (player.leaguePoints < 0) player.leaguePoints = 0;
+
+  const pts = player.leaguePoints;
+  if (pts >= 2000) player.league = 'Profeta';
+  else if (pts >= 1200) player.league = 'Apóstol';
+  else if (pts >= 600) player.league = 'Evangelista';
+  else if (pts >= 200) player.league = 'Discípulo';
+  else player.league = 'Pescador';
+
+  savePlayer();
+  syncPlayerWithFirestore();
+}
+
+import { db } from './firebase.js';
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+
+export async function syncPlayerWithFirestore() {
+  const myId = localStorage.getItem('bb_player_id');
+  if (myId && db) {
+    try {
+      await setDoc(doc(db, "bb_users", myId), {
+        name: player.name,
+        avatar: player.avatar,
+        leaguePoints: player.leaguePoints || 0,
+        league: player.league || 'Pescador',
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    } catch (e) {
+      console.error("Error syncing player state to Firestore:", e);
+    }
+  }
+}
