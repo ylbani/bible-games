@@ -35,7 +35,7 @@ export function renderSettings(container) {
           </div>
           <div class="settings-item-right">
             <label class="toggle-switch">
-              <input type="checkbox" id="toggle-dark" checked disabled>
+              <input type="checkbox" id="toggle-dark">
               <span class="toggle-slider"></span>
             </label>
           </div>
@@ -100,6 +100,23 @@ export function renderSettings(container) {
       showToast('Nombre actualizado ✅', 'success');
     }
   });
+
+  // Dark Mode Toggle
+  const themeToggle = document.getElementById('toggle-dark');
+  if (themeToggle) {
+    // Checkbox should be checked if NOT in light theme (checked = dark mode on)
+    themeToggle.checked = !document.body.classList.contains('light-theme');
+
+    themeToggle.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        document.body.classList.remove('light-theme');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.add('light-theme');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+  }
 
   // Reset Data
   document.getElementById('btn-reset-data')?.addEventListener('click', () => {

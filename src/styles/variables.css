@@ -95,3 +95,22 @@
   --content-padding: 16px;
   --max-width: 480px;
 }
+
+/* ---- Light Theme Overrides ---- */
+.light-theme {
+  --bg-primary: #f5f7fb;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f3f9;
+  --bg-elevated: #ffffff;
+  --bg-input: #eef2f6;
+  --bg-overlay: rgba(0, 0, 0, 0.4);
+
+  --surface-glass: rgba(0, 0, 0, 0.03);
+  --surface-glass-hover: rgba(0, 0, 0, 0.06);
+  --surface-glass-border: rgba(0, 0, 0, 0.08);
+
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+}

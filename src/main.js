@@ -16,6 +16,8 @@ import { renderCharacters } from './games/characters/characters.js';
 import { renderVerseComplete } from './games/verse-complete/verse-complete.js';
 import { renderWordSearch } from './games/word-search/word-search.js';
 import { renderMemory } from './games/memory/memory.js';
+import { renderStories } from './games/stories/stories.js';
+import { renderHangman } from './games/hangman/hangman.js';
 
 // === Register Games ===
 registerGame({
@@ -61,6 +63,24 @@ registerGame({
   description: 'Encuentra los pares bíblicos',
   difficulty: 'easy',
   render: renderMemory
+});
+
+registerGame({
+  id: 'stories',
+  name: 'Relatos de Fe',
+  icon: '📜',
+  description: 'Historias interactivas con elecciones',
+  difficulty: 'media',
+  render: renderStories
+});
+
+registerGame({
+  id: 'hangman',
+  name: 'Ahorcado Bíblico',
+  icon: '🪧',
+  description: 'Adivina la palabra antes de agotar tus vidas',
+  difficulty: 'normal',
+  render: renderHangman
 });
 
 // === Register Routes ===
@@ -129,6 +149,12 @@ function updateNav(path, options = {}) {
 
 // === Initialize App ===
 function init() {
+  // Apply saved theme
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+  }
+
   // Navigation callback
   onNavigate(updateNav);
 
