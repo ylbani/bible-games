@@ -123,13 +123,17 @@ export function renderBibleBattle(container) {
 
   async function tryMatchmake() {
     const queueRef = collection(db, "bb_queue");
-    const q = query(queueRef, where("status", "==", "waiting"), where("uid", "!=", myId));
+    // Simplificamos la consulta para evitar requerir un Índice Compuesto de Firestore
+    const q = query(queueRef, where("status", "==", "waiting"), limit(10));
+    
     try {
       const snapshot = await getDocs(q);
+      
+      // Filtrar localmente en Javascript para excluirnos a nosotros mismos
+      const rivalDoc = snapshot.docs.find(d => d.data().uid !== myId);
 
-      if (!snapshot.empty) {
+      if (rivalDoc) {
         // 1. Encontramos un rival esperando
-        const rivalDoc = snapshot.docs[0];
         const rival = rivalDoc.data();
         myRole = 'p2';
 
