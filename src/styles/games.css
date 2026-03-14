@@ -1,0 +1,1022 @@
+/* ====================================
+   Bible Games Collection - Game Styles
+   ==================================== */
+
+/* ---- Game Container ---- */
+.game-screen {
+  padding-top: var(--space-lg);
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.game-header h2 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-extrabold);
+  margin-bottom: var(--space-xs);
+}
+
+.game-header p {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.game-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-glass);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.hud-value {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-primary-light);
+}
+
+.hud-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* Timer */
+.game-timer {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-xl);
+  overflow: hidden;
+}
+
+.timer-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent-green), var(--color-secondary), var(--color-accent-red));
+  border-radius: var(--radius-full);
+  transition: width 1s linear;
+}
+
+/* ---- TRIVIA ---- */
+.trivia-question {
+  background: var(--bg-card);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  text-align: center;
+}
+
+.trivia-category {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--space-md);
+}
+
+.trivia-question-text {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.5;
+}
+
+.trivia-question-number {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-md);
+}
+
+.trivia-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.trivia-option {
+  background: var(--bg-card);
+  border: 2px solid var(--surface-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.trivia-option:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--color-primary);
+  transform: translateX(4px);
+}
+
+.trivia-option.correct {
+  border-color: var(--color-accent-green);
+  background: rgba(46, 213, 115, 0.1);
+  animation: correct-pulse 0.5s ease;
+}
+
+.trivia-option.incorrect {
+  border-color: var(--color-accent-red);
+  background: rgba(255, 71, 87, 0.1);
+  animation: incorrect-shake 0.5s ease;
+}
+
+.trivia-option.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.option-letter {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-glass);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-extrabold);
+  flex-shrink: 0;
+}
+
+@keyframes correct-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+@keyframes incorrect-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* ---- GUESS THE CHARACTER ---- */
+.character-clue-area {
+  background: var(--bg-card);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  text-align: center;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.character-clue-number {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--space-md);
+}
+
+.character-clue-text {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.6;
+  margin-bottom: var(--space-lg);
+}
+
+.character-points-info {
+  font-size: var(--font-size-xs);
+  color: var(--color-secondary);
+  font-weight: var(--font-weight-bold);
+}
+
+.character-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.character-option {
+  background: var(--bg-card);
+  border: 2px solid var(--surface-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-align: center;
+}
+
+.character-option:hover {
+  border-color: var(--color-primary);
+  background: var(--bg-card-hover);
+}
+
+.character-option.correct {
+  border-color: var(--color-accent-green);
+  background: rgba(46, 213, 115, 0.15);
+}
+
+.character-option.incorrect {
+  border-color: var(--color-accent-red);
+  background: rgba(255, 71, 87, 0.15);
+}
+
+/* ---- COMPLETE THE VERSE ---- */
+.verse-game-display {
+  background: var(--bg-card);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  text-align: center;
+}
+
+.verse-game-ref {
+  font-size: var(--font-size-xs);
+  color: var(--color-secondary);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-lg);
+}
+
+.verse-game-text {
+  font-size: var(--font-size-md);
+  line-height: 2;
+  font-style: italic;
+}
+
+.verse-blank {
+  display: inline-block;
+  min-width: 80px;
+  border-bottom: 3px dashed var(--color-primary);
+  padding: 2px 8px;
+  margin: 0 4px;
+  color: var(--color-primary-light);
+  font-style: normal;
+  font-weight: var(--font-weight-bold);
+  transition: all var(--transition-base);
+}
+
+.verse-blank.filled {
+  border-bottom-style: solid;
+  border-color: var(--color-accent-green);
+  color: var(--color-accent-green);
+}
+
+.verse-blank.wrong {
+  border-color: var(--color-accent-red);
+  color: var(--color-accent-red);
+}
+
+.verse-word-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+.verse-word-btn {
+  background: var(--bg-card);
+  border: 2px solid var(--surface-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-lg);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.verse-word-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--bg-card-hover);
+}
+
+.verse-word-btn.used {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.verse-word-btn.correct {
+  border-color: var(--color-accent-green);
+  background: rgba(46, 213, 115, 0.15);
+}
+
+/* ---- WORD SEARCH ---- */
+.word-search-container {
+  margin-bottom: var(--space-xl);
+}
+
+.word-grid {
+  display: grid;
+  gap: 2px;
+  background: var(--bg-card);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.word-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+}
+
+.word-cell.selecting {
+  background: rgba(67, 97, 238, 0.3);
+  color: var(--text-on-primary);
+}
+
+.word-cell.found {
+  background: rgba(46, 213, 115, 0.25);
+  color: var(--color-accent-green);
+}
+
+.word-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+.word-list-item {
+  padding: var(--space-xs) var(--space-md);
+  background: var(--surface-glass);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all var(--transition-base);
+}
+
+.word-list-item.found {
+  text-decoration: line-through;
+  opacity: 0.5;
+  background: rgba(46, 213, 115, 0.15);
+  color: var(--color-accent-green);
+}
+
+/* ---- MEMORY MATCH ---- */
+.memory-grid {
+  display: grid;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.memory-card {
+  aspect-ratio: 1;
+  perspective: 600px;
+  cursor: pointer;
+}
+
+.memory-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.memory-card.flipped .memory-card-inner {
+  transform: rotateY(180deg);
+}
+
+.memory-card-front,
+.memory-card-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.memory-card-front {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  border: 2px solid rgba(67, 97, 238, 0.3);
+  font-size: 1.5rem;
+}
+
+.memory-card-back {
+  background: var(--bg-card);
+  border: 2px solid var(--surface-glass-border);
+  transform: rotateY(180deg);
+  font-size: 1.8rem;
+  padding: var(--space-sm);
+  text-align: center;
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.memory-card-back .card-text {
+  font-size: var(--font-size-xs);
+  line-height: 1.2;
+  font-weight: var(--font-weight-semibold);
+}
+
+.memory-card.matched .memory-card-inner {
+  transform: rotateY(180deg);
+}
+
+.memory-card.matched .memory-card-back {
+  border-color: var(--color-accent-green);
+  background: rgba(46, 213, 115, 0.1);
+}
+
+/* ---- Game Results ---- */
+.game-results {
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.results-emoji {
+  font-size: 4rem;
+  margin-bottom: var(--space-lg);
+  animation: float 2s ease-in-out infinite;
+}
+
+.results-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-extrabold);
+  margin-bottom: var(--space-md);
+}
+
+.results-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  margin: var(--space-xl) 0;
+}
+
+.result-stat {
+  background: var(--surface-glass);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.result-stat-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-primary-light);
+}
+
+.result-stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.results-rewards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  padding: var(--space-lg);
+  background: linear-gradient(135deg, rgba(247, 183, 49, 0.1), rgba(247, 183, 49, 0.05));
+  border: 1px solid rgba(247, 183, 49, 0.2);
+  border-radius: var(--radius-md);
+}
+
+.results-rewards .reward-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-secondary);
+}
+
+.results-rewards .reward-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.results-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ---- Difficulty Selector ---- */
+.difficulty-selector {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.difficulty-btn {
+  flex: 1;
+  background: var(--bg-card);
+  border: 2px solid var(--surface-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-align: center;
+}
+
+.difficulty-btn.active {
+  border-color: var(--color-primary);
+  background: rgba(67, 97, 238, 0.1);
+  color: var(--color-primary-light);
+}
+
+.difficulty-btn:hover {
+  border-color: var(--color-primary);
+}
+
+/* ---- Additional Trivia Game ---- */
+.trivia-game {
+  padding-top: var(--space-md);
+}
+
+.trivia-header {
+  margin-bottom: var(--space-lg);
+}
+
+.trivia-progress {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.trivia-score {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.trivia-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.trivia-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent-purple));
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+}
+
+.trivia-timer {
+  display: flex;
+  justify-content: center;
+  margin: var(--space-lg) 0;
+}
+
+.timer-circle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-text {
+  position: absolute;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-extrabold);
+}
+
+.trivia-category {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.trivia-question {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: var(--space-xl);
+  padding: var(--space-xl);
+  background: var(--bg-card);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-xl);
+}
+
+.trivia-option.wrong {
+  border-color: var(--color-accent-red);
+  background: rgba(255, 71, 87, 0.1);
+  animation: incorrect-shake 0.5s ease;
+}
+
+.streak-indicator {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-orange);
+  margin-top: var(--space-md);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* ---- Characters Game ---- */
+.characters-game {
+  padding-top: var(--space-md);
+}
+
+.characters-header {
+  margin-bottom: var(--space-lg);
+}
+
+.characters-progress {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.characters-score {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.characters-clue-counter {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.characters-clues {
+  margin-bottom: var(--space-lg);
+}
+
+.clue-card {
+  background: var(--bg-card);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: var(--font-size-sm);
+}
+
+.clue-card.clue-new {
+  animation: screen-slide-in 0.35s ease;
+  border-color: var(--color-primary);
+}
+
+.clue-number {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}
+
+.characters-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.characters-option {
+  background: var(--bg-card);
+  border: 2px solid var(--surface-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-align: center;
+}
+
+.characters-option:hover {
+  border-color: var(--color-primary);
+  background: var(--bg-card-hover);
+}
+
+.characters-option.correct {
+  border-color: var(--color-accent-green);
+  background: rgba(46, 213, 115, 0.15);
+}
+
+.characters-option.wrong {
+  border-color: var(--color-accent-red);
+  background: rgba(255, 71, 87, 0.15);
+}
+
+/* ---- Verse Complete Game ---- */
+.verse-complete-game {
+  padding-top: var(--space-md);
+}
+
+.verse-complete-header {
+  margin-bottom: var(--space-lg);
+}
+
+.verse-complete-ref {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-secondary);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-lg);
+}
+
+.verse-complete-text {
+  background: var(--bg-card);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  font-size: var(--font-size-sm);
+  line-height: 2;
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.vc-word {
+  display: inline;
+}
+
+.vc-blank {
+  display: inline-block;
+  min-width: 60px;
+  border-bottom: 3px dashed var(--color-primary);
+  padding: 2px 8px;
+  margin: 0 4px;
+  color: var(--color-primary-light);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.vc-blank.filled {
+  border-bottom-style: solid;
+  border-color: var(--color-accent-green);
+  color: var(--color-accent-green);
+}
+
+.vc-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+.vc-option {
+  background: var(--bg-card);
+  border: 2px solid var(--surface-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-lg);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.vc-option:hover:not([disabled]) {
+  border-color: var(--color-primary);
+  background: var(--bg-card-hover);
+}
+
+.vc-option.used {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* ---- Word Search Game ---- */
+.word-search-game {
+  padding-top: var(--space-md);
+}
+
+.ws-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.ws-theme {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+}
+
+.ws-theme-icon {
+  font-size: 1.2rem;
+}
+
+.ws-found {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.ws-words-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  justify-content: center;
+}
+
+.ws-word {
+  padding: var(--space-xs) var(--space-md);
+  background: var(--surface-glass);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all var(--transition-base);
+}
+
+.ws-word.found {
+  text-decoration: line-through;
+  opacity: 0.5;
+  background: rgba(46, 213, 115, 0.15);
+  color: var(--color-accent-green);
+}
+
+.ws-grid {
+  display: grid;
+  gap: 2px;
+  background: var(--bg-card);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.ws-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+}
+
+.ws-cell.cell-selected {
+  background: rgba(67, 97, 238, 0.3);
+  color: var(--text-on-primary);
+}
+
+.ws-cell.cell-found {
+  background: rgba(46, 213, 115, 0.25);
+  color: var(--color-accent-green);
+}
+
+/* ---- Memory Game ---- */
+.memory-game {
+  padding-top: var(--space-md);
+}
+
+.memory-header {
+  margin-bottom: var(--space-lg);
+}
+
+.memory-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.memory-card-type {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 2px;
+}
+
+.memory-card-text {
+  font-size: var(--font-size-xs);
+  line-height: 1.2;
+  font-weight: var(--font-weight-semibold);
+  word-break: break-word;
+}
+
+.memory-card-icon {
+  font-size: 1.5rem;
+}
+
+/* ---- Game Results - Additional ---- */
+.results-score-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: var(--space-xl) auto;
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(168, 85, 247, 0.1));
+  border: 3px solid var(--color-primary);
+  justify-content: center;
+}
+
+.results-score-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-primary-light);
+}
+
+.results-score-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.results-stat {
+  background: var(--surface-glass);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.results-stat-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-primary-light);
+}
+
+.results-stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.reward-item {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
