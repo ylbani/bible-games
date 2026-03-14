@@ -18,6 +18,7 @@ import { renderWordSearch } from './games/word-search/word-search.js';
 import { renderMemory } from './games/memory/memory.js';
 import { renderStories } from './games/stories/stories.js';
 import { renderHangman } from './games/hangman/hangman.js';
+import { renderBibleBattle } from './games/bible-battle/bible_battle.js';
 
 // === Register Games ===
 registerGame({
@@ -81,6 +82,15 @@ registerGame({
   description: 'Adivina la palabra antes de agotar tus vidas',
   difficulty: 'normal',
   render: renderHangman
+});
+
+registerGame({
+  id: 'bible-battle',
+  name: 'Bible Battle 1v1',
+  icon: '⚔️',
+  description: 'Trivia competitiva 1vs1 en tiempo real',
+  difficulty: 'alta',
+  render: renderBibleBattle
 });
 
 // === Register Routes ===

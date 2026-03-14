@@ -1441,3 +1441,168 @@
 #ws-grid {
   gap: 1px !important; /* Más apretado */
 }
+
+/* ---- Bible Battle (1v1 Multiplayer) ---- */
+.bible-battle-game {
+  padding: var(--space-md);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 70vh;
+}
+
+/* Radar Matchmaking */
+.radar-container {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+  margin: var(--space-2xl) auto var(--space-lg) auto;
+  position: relative;
+  box-shadow: 0 0 20px rgba(67, 97, 238, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.radar-circle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(67,97,238,0.1) 0%, rgba(0,0,0,0) 70%);
+}
+
+.radar-scan {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(from 0deg, rgba(67,97,238,0.4) 0deg, transparent 90deg);
+  border-radius: 50%;
+  animation: radar-spin 2s linear infinite;
+}
+
+.radar-avatar {
+  font-size: 3rem;
+  z-index: 2;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes radar-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* HUD Arena */
+.bb-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface-glass);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--surface-glass-border);
+  padding: var(--space-md);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-lg);
+}
+
+.bb-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bb-avatar {
+  font-size: 2.25rem;
+  background: rgba(255,255,255,0.05);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.bb-name {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.bb-score {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-light);
+}
+
+.bb-vs {
+  font-weight: var(--font-weight-black);
+  color: var(--color-secondary);
+  font-style: italic;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+/* Timer */
+.bb-timer-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  margin-bottom: var(--space-lg);
+  overflow: hidden;
+}
+
+.timer-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  border-radius: 3px;
+  transition: width 0.1s linear;
+}
+
+/* Question & Powerups */
+.bb-question-box {
+  padding: var(--space-lg);
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.bb-q-header {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary-light);
+  margin-bottom: var(--space-xs);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.bb-options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.bb-powerups {
+  display: flex;
+  justify-content: space-around;
+  gap: var(--space-sm);
+  margin-top: auto;
+}
+
+.btn-powerup {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--surface-glass-border);
+  padding: var(--space-md) var(--space-xs);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-lg);
+}
+
+.btn-powerup.disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed;
+  background: rgba(0,0,0,0.1) !important;
+}

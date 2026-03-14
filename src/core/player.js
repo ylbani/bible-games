@@ -17,6 +17,8 @@ const DEFAULT_PLAYER = {
   totalScore: 0,
   gamesCompleted: {},
   bestScores: {},
+  leaguePoints: 0, // Puntos de Liga para Bible Battle
+  league: 'Pescador',
   createdAt: Date.now()
 };
 
