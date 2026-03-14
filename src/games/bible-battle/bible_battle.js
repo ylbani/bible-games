@@ -35,24 +35,47 @@ export function renderBibleBattle(container) {
     return 'user_' + Math.random().toString(36).substr(2, 9);
   }
 
-  // --- Fase 1: Matchmaking ---
+  // --- Fase 1: Selección de Modo / Matchmaking ---
   function renderMatchmaking() {
     container.innerHTML = `
       <div class="bible-battle-game">
-        <div class="radar-container">
-          <div class="radar-circle"></div>
-          <div class="radar-scan"></div>
-          <div class="radar-avatar">${player.avatar}</div>
-        </div>
-        <h3 class="text-center mt-md">Buscando Oponente...</h3>
-        <p class="text-muted text-center text-sm">Emparejando en la arena de fe</p>
-        
-        <div class="bb-matchmaking-actions">
-          <button class="btn btn-secondary btn-block mt-lg" id="btn-cancel-match">Cancelar</button>
-          <button class="btn btn-outline btn-block mt-sm" id="btn-open-leaderboard">🏆 Ver Clasificación</button>
+        <div class="bb-menu-header">
+          <h3>⚔️ Bible Battle</h3>
+          <p class="text-secondary text-sm">Elige cómo quieres competir</p>
         </div>
 
-        <!-- Modal Leaderboard -->
+        <div class="bb-modes-grid">
+          <button class="btn btn-primary btn-block btn-lg" id="btn-mode-random">
+             <span class="btn-icon">🆚</span>
+             <div class="btn-text">
+               <div class="btn-title">Partida Aleatoria</div>
+               <div class="btn-desc">Emparejamiento rápido global</div>
+             </div>
+          </button>
+
+          <button class="btn btn-success btn-block btn-lg" id="btn-mode-create">
+             <span class="btn-icon">🏠</span>
+             <div class="btn-text">
+               <div class="btn-title">Crear Sala Privada</div>
+               <div class="btn-desc">Obtén un código para un amigo</div>
+             </div>
+          </button>
+
+          <button class="btn btn-secondary btn-block btn-lg" id="btn-mode-join">
+             <span class="btn-icon">🔑</span>
+             <div class="btn-text">
+               <div class="btn-title">Unirse con Código</div>
+               <div class="btn-desc">Ingresa el código de tu amigo</div>
+             </div>
+          </button>
+        </div>
+
+        <div class="bb-matchmaking-actions mt-xl">
+          <button class="btn btn-outline btn-block" id="btn-open-leaderboard">🏆 Ver Clasificación</button>
+          <button class="btn btn-secondary btn-block mt-sm" id="btn-back-home">🏠 Volver al Menú</button>
+        </div>
+
+        <!-- Modal Leaderboard ... -->
         <div id="bb-leaderboard-modal" class="modal-overlay" style="display:none;">
           <div class="modal-content glass">
             <span class="modal-close" id="close-leaderboard">&times;</span>
@@ -67,8 +90,21 @@ export function renderBibleBattle(container) {
       </div>
     `;
 
-    document.getElementById('btn-cancel-match')?.addEventListener('click', () => {
-      if (unsubscribeQueue) unsubscribeQueue();
+    // Eventos del Menú
+    document.getElementById('btn-mode-random')?.addEventListener('click', () => {
+      renderRadar();
+      tryMatchmake();
+    });
+
+    document.getElementById('btn-mode-create')?.addEventListener('click', () => {
+      createPrivateRoom();
+    });
+
+    document.getElementById('btn-mode-join')?.addEventListener('click', () => {
+      renderJoinRoom();
+    });
+
+    document.getElementById('btn-back-home')?.addEventListener('click', () => {
       navigate('home');
     });
 
@@ -80,8 +116,130 @@ export function renderBibleBattle(container) {
     document.getElementById('close-leaderboard')?.addEventListener('click', () => {
       document.getElementById('bb-leaderboard-modal').style.display = 'none';
     });
+  }
 
-    tryMatchmake();
+  function renderRadar() {
+    container.innerHTML = `
+      <div class="bible-battle-game">
+        <div class="radar-container">
+          <div class="radar-circle"></div>
+          <div class="radar-scan"></div>
+          <div class="radar-avatar">${player.avatar}</div>
+        </div>
+        <h3 class="text-center mt-md">Buscando Oponente...</h3>
+        <p class="text-muted text-center text-sm">Emparejando en la arena de fe</p>
+        
+        <div class="bb-matchmaking-actions mt-lg">
+          <button class="btn btn-secondary btn-block" id="btn-cancel-match">Cancelar</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-cancel-match')?.addEventListener('click', () => {
+      if (unsubscribeQueue) unsubscribeQueue();
+      renderMatchmaking(); // Volver al menú del juego
+    });
+  }
+
+  async function createPrivateRoom() {
+    const code = Math.random().toString(36).substr(2, 4).toUpperCase();
+    container.innerHTML = `
+      <div class="bible-battle-game">
+        <div class="bb-private-room">
+          <div class="bb-room-icon">🏠</div>
+          <h3>Sala Privada Creada</h3>
+          <p class="text-secondary text-sm">Comparte este código con tu amigo para que se una:</p>
+          <div class="bb-room-code" id="room-code-display">${code}</div>
+          <button class="btn btn-outline btn-sm mt-xs" id="btn-copy-code">📋 Copiar Código</button>
+          
+          <div class="bb-waiting-dots mt-xl">
+             <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          </div>
+          <p class="text-muted text-sm text-center">Esperando a que tu amigo se una...</p>
+
+          <button class="btn btn-secondary btn-block mt-xl" id="btn-cancel-room">Cancelar</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-cancel-room')?.addEventListener('click', () => {
+      if (unsubscribeMatch) unsubscribeMatch();
+      renderMatchmaking();
+    });
+
+    document.getElementById('btn-copy-code')?.addEventListener('click', () => {
+      navigator.clipboard.writeText(code);
+      showToast('¡Código copiado!', 'info');
+    });
+
+    try {
+      myRole = 'p1';
+      const allQs = shuffleArray([...questions.easy, ...questions.medium]).slice(0, 5);
+      const matchRef = await addDoc(collection(db, "bb_matches"), {
+        status: 'waiting_friend',
+        code: code,
+        p1: { uid: myId, name: player.name, avatar: player.avatar, score: 0, currentQ: 0, lastAnswered: -1 },
+        p2: null,
+        questions: allQs,
+        createdAt: serverTimestamp()
+      });
+
+      startMatch(matchRef.id);
+    } catch (e) {
+      showToast("Error creando sala: " + e.message, "danger");
+      renderMatchmaking();
+    }
+  }
+
+  function renderJoinRoom() {
+    container.innerHTML = `
+      <div class="bible-battle-game">
+        <div class="bb-private-room">
+          <div class="bb-room-icon">🔑</div>
+          <h3>Unirse a Sala</h3>
+          <p class="text-secondary text-sm">Ingresa el código de 4 dígitos de tu amigo:</p>
+          
+          <input type="text" id="input-room-code" class="input-code mt-md" placeholder="CÓDIGO" maxlength="4" style="text-transform: uppercase;">
+
+          <button class="btn btn-primary btn-block mt-lg" id="btn-confirm-join">Unirse a la Batalla</button>
+          <button class="btn btn-secondary btn-block mt-sm" id="btn-cancel-join">Cancelar</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-cancel-join')?.addEventListener('click', () => {
+      renderMatchmaking();
+    });
+
+    document.getElementById('btn-confirm-join')?.addEventListener('click', async () => {
+      const typedCode = document.getElementById('input-room-code').value.trim().toUpperCase();
+      if (typedCode.length < 4) {
+        showToast('Ingresa un código válido de 4 letras.', 'warning');
+        return;
+      }
+
+      try {
+        const q = query(collection(db, "bb_matches"), where("status", "==", "waiting_friend"), where("code", "==", typedCode));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+          showToast('Sala no encontrada o llena.', 'warning');
+          return;
+        }
+
+        const matchDoc = snapshot.docs[0];
+        myRole = 'p2';
+
+        await updateDoc(doc(db, "bb_matches", matchDoc.id), {
+          status: 'playing',
+          p2: { uid: myId, name: player.name, avatar: player.avatar, score: 0, currentQ: 0, lastAnswered: -1 }
+        });
+
+        startMatch(matchDoc.id);
+      } catch (e) {
+        showToast('Error al unirse: ' + e.message, 'danger');
+      }
+    });
   }
 
   async function loadLeaderboard() {
@@ -179,8 +337,7 @@ export function renderBibleBattle(container) {
     } catch (error) {
        console.error("Matchmaking error:", error);
        showToast("Error de conexión: " + error.message, "danger");
-       // Volver atrás o detener radar
-       setTimeout(() => navigate('home'), 3000);
+       // Dejar la alerta en pantalla sin redirigir para que el usuario pueda leerla
     }
   }
 
