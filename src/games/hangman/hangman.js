@@ -45,6 +45,12 @@ export function renderHangman(container) {
 
         <div class="hm-gallows">
           <svg height="180" width="140" class="gallows-svg">
+            <style>
+              .gallows-line { stroke: #ffffff; stroke-width: 4; fill: none; stroke-linecap: round; }
+              .gallows-char { stroke: #ef233c; stroke-width: 3.5; fill: none; stroke-linecap: round; transition: opacity 0.3s ease; }
+              .gallows-visible { opacity: 1 !important; visibility: visible !important; }
+              .gallows-hidden { opacity: 0 !important; visibility: hidden !important; }
+            </style>
             <!-- Posiciones fijas (Horca) -->
             <line x1="10" y1="170" x2="130" y2="170" class="gallows-line" /> <!-- Base -->
             <line x1="30" y1="170" x2="30" y2="10" class="gallows-line" />  <!-- Poste vertical -->
@@ -53,22 +59,22 @@ export function renderHangman(container) {
 
             <!-- Monigote (Cuerpo del Ahorcado) -->
             <!-- Cabeza -->
-            <circle cx="90" cy="45" r="15" class="gallows-char ${lives <= 5 ? 'visible' : 'hidden'}" />
+            <circle cx="90" cy="45" r="15" class="gallows-char ${lives <= 5 ? 'gallows-visible' : 'gallows-hidden'}" />
             
             <!-- Cuerpo -->
-            <line x1="90" y1="60" x2="90" y2="105" class="gallows-char ${lives <= 4 ? 'visible' : 'hidden'}" />
+            <line x1="90" y1="60" x2="90" y2="105" class="gallows-char ${lives <= 4 ? 'gallows-visible' : 'gallows-hidden'}" />
             
             <!-- Brazo Izquierdo -->
-            <line x1="90" y1="70" x2="70" y2="90" class="gallows-char ${lives <= 3 ? 'visible' : 'hidden'}" />
+            <line x1="90" y1="70" x2="70" y2="90" class="gallows-char ${lives <= 3 ? 'gallows-visible' : 'gallows-hidden'}" />
             
             <!-- Brazo Derecho -->
-            <line x1="90" y1="70" x2="110" y2="90" class="gallows-char ${lives <= 2 ? 'visible' : 'hidden'}" />
+            <line x1="90" y1="70" x2="110" y2="90" class="gallows-char ${lives <= 2 ? 'gallows-visible' : 'gallows-hidden'}" />
             
             <!-- Pierna Izquierda -->
-            <line x1="90" y1="105" x2="75" y2="140" class="gallows-char ${lives <= 1 ? 'visible' : 'hidden'}" />
+            <line x1="90" y1="105" x2="75" y2="140" class="gallows-char ${lives <= 1 ? 'gallows-visible' : 'gallows-hidden'}" />
             
-            <!-- Pierna Derecha -->
-            <line x1="90" y1="105" x2="105" y2="140" class="gallows-char ${lives <= 0 ? 'visible' : 'hidden'}" />
+            <!-- Pierna Derecho -->
+            <line x1="90" y1="105" x2="105" y2="140" class="gallows-char ${lives <= 0 ? 'gallows-visible' : 'gallows-hidden'}" />
           </svg>
         </div>
 
