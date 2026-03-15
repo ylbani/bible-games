@@ -1836,8 +1836,8 @@
   width: 100%;
   margin-top: var(--space-md);
   overflow: hidden;
-  height: 60vh; /* Forzar altura fija porcentual del viewport para evitar colapsos a 0px */
-  min-height: 400px;
+  height: 75vh; /* Aumentar al 75% del viewport para dar más tiempo de lectura */
+  min-height: 500px;
   background: rgba(0,0,0,0.15);
 }
 
