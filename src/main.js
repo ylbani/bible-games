@@ -19,6 +19,7 @@ import { renderMemory } from './games/memory/memory.js';
 import { renderStories } from './games/stories/stories.js';
 import { renderHangman } from './games/hangman/hangman.js';
 import { renderBibleBattle } from './games/bible-battle/bible_battle.js';
+import { renderBalloonPop } from './games/bible-balloon-pop/balloon_pop.js';
 
 // === Register Games ===
 registerGame({
@@ -91,6 +92,15 @@ registerGame({
   description: 'Trivia competitiva 1vs1 en tiempo real',
   difficulty: 'alta',
   render: renderBibleBattle
+});
+
+registerGame({
+  id: 'balloon-pop',
+  name: 'Bible Balloon Pop',
+  icon: '🎈',
+  description: 'Explotar globos con respuestas correctas',
+  difficulty: 'fácil',
+  render: renderBalloonPop
 });
 
 // === Register Routes ===
