@@ -14,8 +14,25 @@ export function renderHangman(container) {
   let isGameOver = false;
 
   function getRandomWord() {
-    const randomIndex = Math.floor(Math.random() * hangmanWords.length);
-    return hangmanWords[randomIndex];
+    let playedWords = JSON.parse(localStorage.getItem('hm_played_words') || '[]');
+    
+    // Filtrar disponibles
+    let available = hangmanWords.filter(w => !playedWords.includes(w.word));
+    
+    // Si se agotaron todas las palabras, reiniciar la lista
+    if (available.length === 0) {
+      playedWords = [];
+      available = [...hangmanWords];
+    }
+    
+    const randomIndex = Math.floor(Math.random() * available.length);
+    const selected = available[randomIndex];
+    
+    // Guardar para que no se repita en esta tanda
+    playedWords.push(selected.word);
+    localStorage.setItem('hm_played_words', JSON.stringify(playedWords));
+    
+    return selected;
   }
 
   function render() {
