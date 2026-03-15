@@ -41,11 +41,35 @@ export function renderHangman(container) {
       <div class="hangman-game">
         <div class="hm-header">
           <div class="hm-category">🏷️ ${currentItem.category}</div>
-          <div class="hm-lives">
-            ${Array.from({ length: maxLives }, (_, i) => `
-              <span class="hm-heart ${i < lives ? 'filled' : 'empty'}">❤️</span>
-            `).join('')}
-          </div>
+        </div>
+
+        <div class="hm-gallows">
+          <svg height="180" width="140" class="gallows-svg">
+            <!-- Posiciones fijas (Horca) -->
+            <line x1="10" y1="170" x2="130" y2="170" class="gallows-line" /> <!-- Base -->
+            <line x1="30" y1="170" x2="30" y2="10" class="gallows-line" />  <!-- Poste vertical -->
+            <line x1="30" y1="10" x2="90" y2="10" class="gallows-line" />   <!-- Poste horizontal -->
+            <line x1="90" y1="10" x2="90" y2="30" class="gallows-line" />   <!-- Soga -->
+
+            <!-- Monigote (Cuerpo del Ahorcado) -->
+            <!-- Cabeza -->
+            <circle cx="90" cy="45" r="15" class="gallows-char ${lives <= 5 ? 'visible' : 'hidden'}" />
+            
+            <!-- Cuerpo -->
+            <line x1="90" y1="60" x2="90" y2="105" class="gallows-char ${lives <= 4 ? 'visible' : 'hidden'}" />
+            
+            <!-- Brazo Izquierdo -->
+            <line x1="90" y1="70" x2="70" y2="90" class="gallows-char ${lives <= 3 ? 'visible' : 'hidden'}" />
+            
+            <!-- Brazo Derecho -->
+            <line x1="90" y1="70" x2="110" y2="90" class="gallows-char ${lives <= 2 ? 'visible' : 'hidden'}" />
+            
+            <!-- Pierna Izquierda -->
+            <line x1="90" y1="105" x2="75" y2="140" class="gallows-char ${lives <= 1 ? 'visible' : 'hidden'}" />
+            
+            <!-- Pierna Derecha -->
+            <line x1="90" y1="105" x2="105" y2="140" class="gallows-char ${lives <= 0 ? 'visible' : 'hidden'}" />
+          </svg>
         </div>
 
         <div class="hm-hint-container">
