@@ -1836,7 +1836,9 @@
   width: 100%;
   margin-top: var(--space-md);
   overflow: hidden;
-  /* El canvas o div absoluto */
+  height: 60vh; /* Forzar altura fija porcentual del viewport para evitar colapsos a 0px */
+  min-height: 400px;
+  background: rgba(0,0,0,0.15);
 }
 
 /* Globo */
