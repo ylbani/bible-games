@@ -2,10 +2,11 @@
 // Profile Screen
 // ====================================
 
-import { getPlayer, getXPForNextLevel, getLevelName, getAvatars, setName, setAvatar } from '../core/player.js';
+import { getPlayer, getXPForNextLevel, getLevelName, getAvatars, setName, setAvatar, loginWithGoogle, logout } from '../core/player.js';
 import { getUnlockedCount, getTotalCount } from '../core/achievements.js';
 import { getPlayerPosition } from '../core/ranking.js';
 import { showToast } from '../core/ui-utils.js';
+import { auth } from '../core/firebase.js';
 
 export function renderProfile(container) {
   const player = getPlayer();
@@ -15,6 +16,7 @@ export function renderProfile(container) {
   const totalAchievements = getTotalCount();
   const rank = getPlayerPosition();
   const avatars = getAvatars();
+  const user = auth ? auth.currentUser : null;
 
   container.innerHTML = `
     <div class="profile-screen">
@@ -86,8 +88,18 @@ export function renderProfile(container) {
       </div>
 
       <div class="profile-section">
-        <button class="btn btn-secondary btn-block" id="btn-edit-name">
-          ✏️ Cambiar Nombre
+        ${user ? `
+            <div class="auth-box glass p-md">
+              <p class="text-sm text-center">Conectado como <b>${user.email}</b></p>
+              <button class="btn btn-outline btn-block mt-sm" id="btn-logout">🚪 Cerrar Sesión</button>
+            </div>
+        ` : `
+            <button class="btn btn-primary btn-block" id="btn-login-google">
+              🌐 Iniciar Sesión con Google
+            </button>
+        `}
+        <button class="btn btn-secondary btn-block mt-sm" id="btn-edit-name">
+          ✏️ Cambiar Nombre Manulamente
         </button>
       </div>
 
@@ -103,6 +115,37 @@ export function renderProfile(container) {
       </div>
     </div>
   `;
+
+  setupProfileEvents();
+}
+
+function setupProfileEvents() {
+  const container = document.body; // fallback o pasar container
+  const player = getPlayer();
+  const avatars = getAvatars();
+
+  document.getElementById('btn-login-google')?.addEventListener('click', async () => {
+    try {
+      await loginWithGoogle();
+      showToast('Sesión iniciada con éxito ✅', 'success');
+      // Recargar vista para actualizar botones
+      const profileScreen = document.querySelector('.profile-screen');
+      if (profileScreen) {
+         renderProfile(profileScreen.parentElement);
+      }
+    } catch (e) {
+      showToast('Error al iniciar sesión ❌', 'error');
+    }
+  });
+
+  document.getElementById('btn-logout')?.addEventListener('click', async () => {
+    await logout();
+    showToast('Sesión cerrada ✅', 'info');
+    const profileScreen = document.querySelector('.profile-screen');
+    if (profileScreen) {
+       renderProfile(profileScreen.parentElement);
+    }
+  });
 
   // Change Avatar
   document.getElementById('btn-change-avatar')?.addEventListener('click', () => {

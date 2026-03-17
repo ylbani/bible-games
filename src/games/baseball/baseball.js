@@ -1,11 +1,13 @@
 import { questions } from '../../data/questions.js';
 import { showToast, shuffleArray } from '../../core/ui-utils.js';
 import { addXP, addCoins } from '../../core/player.js';
+import { renderBaseballTeams } from './baseball_teams.js';
 
 export function renderBaseball(container) {
   // --- ESTADO DEL JUEGO ---
-  let score = { away: 0, home: 0 }; // away = Visitante (Jugador), home = Local (IA)
+  let score = { away: 0, home: 0 }; 
   let inning = 1;
+// ... (existing code remains identical below)
   let halfInning = 'top'; // 'top' (Arriba) batea jugador, 'bottom' (Abajo) batea IA
   let outs = 0;
   let bases = [false, false, false]; // [1B, 2B, 3B]
@@ -277,6 +279,47 @@ export function renderBaseball(container) {
         renderUI();
       });
     }
+  }
+
+  function init() {
+    renderModeSelection();
+  }
+
+  function renderModeSelection() {
+    container.innerHTML = `
+      <div class="bsb-mode-selection">
+        <div class="bb-menu-header text-center">
+          <h3>⚾ Béisbol Cristiano</h3>
+          <p class="text-secondary text-sm">Selecciona cómo deseas jugar</p>
+        </div>
+        
+        <div class="bb-modes-grid mt-xl">
+          <button class="btn btn-primary btn-block btn-lg" id="btn-mode-solo">
+             <span class="btn-icon">🧑‍💻</span>
+             <div class="btn-text">
+               <div class="btn-title">Modo Solitario</div>
+               <div class="btn-desc">Juega contra la IA y entrena</div>
+             </div>
+          </button>
+
+          <button class="btn btn-success btn-block btn-lg mt-sm" id="btn-mode-teams">
+             <span class="btn-icon">👥</span>
+             <div class="btn-text">
+               <div class="btn-title">Modo Equipos</div>
+               <div class="btn-desc">Crea o únete a un equipo ppa participar</div>
+             </div>
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-mode-solo')?.addEventListener('click', () => {
+      renderUI();
+    });
+
+    document.getElementById('btn-mode-teams')?.addEventListener('click', () => {
+      renderBaseballTeams(container);
+    });
   }
 
   init();
