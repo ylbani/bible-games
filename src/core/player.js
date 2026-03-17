@@ -162,19 +162,46 @@ export function addLeaguePoints(amount) {
 
 import { db, auth } from './firebase.js';
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { signInWithRedirect, signOut, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
+import { signInWithRedirect, signOut, getRedirectResult, GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 
 export async function loginWithGoogle() {
   if (!auth) return null;
   const provider = new GoogleAuthProvider();
   try {
-    // Cambiar a Redirect evita bloqueos COOP y funciona en WebViews APK
+    // Si corre en WebView Android MAUI, disparar flujo C#
+    if (window.isAndroidApp) {
+       window.location.href = "hybrid:login";
+       return;
+    }
+    // De lo contrario, usar Redirect estándar
     await signInWithRedirect(auth, provider);
   } catch (e) {
     console.error("Google Login Error:", e);
     throw e;
   }
 }
+
+// Receptor del token nativo C#
+window.nativeGoogleLogin = async (idToken) => {
+  if (!auth) return;
+  try {
+    const credential = GoogleAuthProvider.credential(idToken);
+    const result = await signInWithCredential(auth, credential);
+    const user = result.user;
+    
+    if (!player) getPlayer();
+    player.name = user.displayName || 'Jugador';
+    localStorage.setItem('bb_player_id', user.uid);
+    savePlayer();
+    await syncPlayerWithFirestore();
+    
+    // Forzar recarga o alerta para pintar el Dashboard
+    if (typeof showToast === 'function') showToast('¡Sesión Iniciada!', 'success');
+    window.location.reload(); 
+  } catch (e) {
+    console.error("Native Auth Error:", e);
+  }
+};
 
 export async function handleAuthRedirect() {
   if (!auth) return;
