@@ -162,26 +162,34 @@ export function addLeaguePoints(amount) {
 
 import { db, auth } from './firebase.js';
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import { signInWithRedirect, signOut, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
 
 export async function loginWithGoogle() {
   if (!auth) return null;
   const provider = new GoogleAuthProvider();
   try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    
-    if (!player) getPlayer();
-    player.name = user.displayName || 'Jugador';
-    // Se guarda la UID en el localStorage para que Bible Battle use esta UID
-    localStorage.setItem('bb_player_id', user.uid);
-    
-    savePlayer();
-    await syncPlayerWithFirestore();
-    return user;
+    // Cambiar a Redirect evita bloqueos COOP y funciona en WebViews APK
+    await signInWithRedirect(auth, provider);
   } catch (e) {
     console.error("Google Login Error:", e);
     throw e;
+  }
+}
+
+export async function handleAuthRedirect() {
+  if (!auth) return;
+  try {
+    const result = await getRedirectResult(auth);
+    if (result && result.user) {
+      const user = result.user;
+      if (!player) getPlayer();
+      player.name = user.displayName || 'Jugador';
+      localStorage.setItem('bb_player_id', user.uid);
+      savePlayer();
+      await syncPlayerWithFirestore();
+    }
+  } catch (e) {
+    console.error("Error absorbiendo Redirect:", e);
   }
 }
 

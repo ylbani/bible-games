@@ -3,7 +3,7 @@
 // ====================================
 
 import { registerRoute, initRouter, onNavigate, navigate } from './core/router.js';
-import { getPlayer, updateCoinDisplay } from './core/player.js';
+import { getPlayer, updateCoinDisplay, handleAuthRedirect } from './core/player.js';
 import { renderHome } from './screens/home.js';
 import { renderVerse } from './screens/verse.js';
 import { renderProfile } from './screens/profile.js';
@@ -184,6 +184,9 @@ function init() {
   if (savedTheme === 'light') {
     document.body.classList.add('light-theme');
   }
+
+  // Absorber resultado de Auth Redirect si existe
+  handleAuthRedirect();
 
   // Navigation callback
   onNavigate(updateNav);
