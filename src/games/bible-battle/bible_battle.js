@@ -181,6 +181,8 @@ export function renderBibleBattle(container) {
         p1: { uid: myId, name: player.name, avatar: player.avatar, score: 0, currentQ: 0, lastAnswered: -1 },
         p2: null,
         questions: allQs,
+        p1_rematch: false,
+        p2_rematch: false,
         createdAt: serverTimestamp()
       });
 
@@ -302,6 +304,8 @@ export function renderBibleBattle(container) {
           p1: { uid: rival.uid, name: rival.name, avatar: rival.avatar, score: 0, currentQ: 0, lastAnswered: -1 },
           p2: { uid: myId, name: player.name, avatar: player.avatar, score: 0, currentQ: 0, lastAnswered: -1 },
           questions: allQs,
+          p1_rematch: false,
+          p2_rematch: false,
           startTime: serverTimestamp()
         });
 
@@ -348,12 +352,45 @@ export function renderBibleBattle(container) {
       if (!docSnapshot.exists()) return;
       matchData = docSnapshot.data();
       
-      if (matchData.status === 'starting') {
-        // Countdown visual pequeño si se desea
-        updateMatchStatus('playing');
-      } else {
-        renderArena();
+      const myData = matchData[myRole];
+      const rivalRole = myRole === 'p1' ? 'p2' : 'p1';
+      const rivalData = matchData[rivalRole];
+
+      // Verificar si ambos quieren revancha
+      if (matchData.p1_rematch && matchData.p2_rematch) {
+        if (myRole === 'p1') {
+          triggerRematchReset();
+        }
+        return;
       }
+
+      if (matchData.status === 'starting') {
+        // Reset local states for a new match
+        powerups = { fiftyfifty: true, freeze: true, double: true };
+        activeDouble = false;
+        hasAnsweredCurrent = false;
+        clearInterval(timerInterval);
+
+        if (myRole === 'p1') updateMatchStatus('playing');
+      } else if (matchData.status === 'playing') {
+        renderArena();
+      } else if (matchData.status === 'ended' || (myData.currentQ >= 5 && rivalData && rivalData.currentQ >= 5)) {
+        renderResults();
+      } else {
+        renderArena(); // Si un jugador terminó pero el otro no, sigue en arena/pantalla espera
+      }
+    });
+  }
+
+  async function triggerRematchReset() {
+    const allQs = shuffleArray([...questions.easy, ...questions.medium]).slice(0, 5);
+    await updateDoc(doc(db, "bb_matches", currentMatchId), {
+      status: 'starting',
+      'p1.score': 0, 'p1.currentQ': 0, 'p1.lastAnswered': -1,
+      'p2.score': 0, 'p2.currentQ': 0, 'p2.lastAnswered': -1,
+      questions: allQs,
+      p1_rematch: false,
+      p2_rematch: false
     });
   }
 
@@ -498,7 +535,9 @@ export function renderBibleBattle(container) {
 
   // --- Fase 3: Resultados ---
   function renderResults() {
-    if (unsubscribeMatch) unsubscribeMatch();
+    // NO desuscribirse aquí para poder escuchar el flag de revancha
+    if (timerInterval) clearInterval(timerInterval);
+
     const myData = matchData[myRole];
     const rivalRole = myRole === 'p1' ? 'p2' : 'p1';
     const rivalData = matchData[rivalRole];
@@ -506,22 +545,27 @@ export function renderBibleBattle(container) {
     const won = myData.score > rivalData.score;
     const tie = myData.score === rivalData.score;
 
-    if (won) {
-      addCoins(100);
-      addXP(50);
-      addLeaguePoints(25);
-    } else if (!tie) {
-      addLeaguePoints(-10); // Restar puntos si pierde
-    }
+    const myRematch = matchData[`${myRole}_rematch`] || false;
+    const rivalRematch = matchData[`${rivalRole}_rematch`] || false;
 
-    // Sync final stats
-    syncPlayerWithFirestore();
+    // Solo sumar puntos una vez para evitar duplicar en re-renders
+    if (!window._bb_reward_given_for_match || window._bb_reward_given_for_match !== currentMatchId) {
+      window._bb_reward_given_for_match = currentMatchId;
+      if (won) {
+        addCoins(100);
+        addXP(50);
+        addLeaguePoints(25);
+      } else if (!tie) {
+        addLeaguePoints(-10);
+      }
+      syncPlayerWithFirestore();
+    }
 
     container.innerHTML = `
       <div class="game-results">
         <div class="results-emoji">${won ? '🏆' : tie ? '🤝' : '😢'}</div>
         <h2 class="results-title">${won ? '¡Victoria!' : tie ? '¡Empate!' : '¡Derrota!'}</h2>
-
+        
         <div class="results-score-circle">
           <span class="results-score-value">${myData.score}</span>
           <span class="results-score-label">Tus puntos</span>
@@ -530,6 +574,7 @@ export function renderBibleBattle(container) {
         <div class="results-stats">
           <p class="text-secondary">Rival: <b>${rivalData.name}</b> (${rivalData.score} pts)</p>
           <div class="bb-league-badge mt-sm">${player.league}</div>
+          ${rivalRematch ? `<div class="badge mt-sm badge-warning">🔥 ¡El oponente quiere Revancha!</div>` : ''}
         </div>
 
         <div class="results-rewards">
@@ -537,24 +582,26 @@ export function renderBibleBattle(container) {
         </div>
 
         <div class="results-actions">
-          <button class="btn btn-primary btn-block" id="btn-play-again-bb">🔄 Jugar de Nuevo</button>
+          <button class="btn btn-primary btn-block" id="btn-play-again-bb" ${myRematch ? 'disabled' : ''}>
+            ${myRematch ? '⌛ Esperando respuesta...' : rivalRematch ? '🔥 Aceptar Revancha' : '🔄 Pedir Revancha'}
+          </button>
           <button class="btn btn-secondary btn-block" id="btn-go-home">🏠 Volver al Menú</button>
         </div>
       </div>
     `;
 
-    document.getElementById('btn-play-again-bb')?.addEventListener('click', () => {
-      renderMatchmaking();
+    document.getElementById('btn-play-again-bb')?.addEventListener('click', async () => {
+      if (myRematch) return;
+      const updateObj = {};
+      updateObj[`${myRole}_rematch`] = true;
+      await updateDoc(doc(db, "bb_matches", currentMatchId), updateObj);
+      showToast('Solicitud de revancha enviada', 'info');
     });
 
     document.getElementById('btn-go-home')?.addEventListener('click', () => {
+      if (unsubscribeMatch) unsubscribeMatch();
       navigate('home');
     });
-
-    // delete match file safety
-    setTimeout(() => {
-       if (myRole === 'p1') deleteDoc(doc(db, "bb_matches", currentMatchId));
-    }, 5000);
   }
 
   renderMatchmaking();
