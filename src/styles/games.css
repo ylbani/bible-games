@@ -1841,6 +1841,224 @@
   background: rgba(0,0,0,0.15);
 }
 
+/* ====================================
+   Béisbol Cristiano
+   ==================================== */
+.bsb-game {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+.bsb-hud {
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bsb-score-board {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: center;
+}
+
+.bsb-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bsb-team-name { font-size: 0.8rem; color: var(--text-secondary); }
+.bsb-team-runs { font-size: 1.8rem; font-weight: 800; color: var(--primary-light); }
+
+.bsb-divider { font-style: italic; opacity: 0.5; }
+
+.bsb-field-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  min-height: 300px;
+}
+
+.bsb-diamond {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  background: rgba(34, 139, 34, 0.4); /* Césped */
+  transform: rotate(45deg);
+  border: 4px solid var(--primary-light);
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 245, 212, 0.2);
+}
+
+.bsb-base {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  background: white;
+  transform: rotate(-45deg); /* Des-rotar el texto */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: #333;
+  border-radius: 4px;
+  border: 2px solid #ccc;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+
+.bsb-base.occupied {
+  background: var(--accent-color);
+  color: white;
+  border-color: #ffd700;
+  transform: rotate(-45deg) scale(1.1);
+  box-shadow: 0 0 10px var(--accent-color);
+}
+
+.edge-top { top: -18px; left: calc(50% - 18px); }
+.edge-left { left: -18px; top: calc(50% - 18px); }
+.edge-right { right: -18px; top: calc(50% - 18px); }
+.edge-bottom { bottom: -18px; left: calc(50% - 18px); }
+
+.bsb-base.batting {
+  background: #ff4757;
+  color: white;
+  border-color: #ff6b81;
+}
+
+/* Ruleta */
+.bsb-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.bsb-roulette-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.bsb-wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid white;
+  position: relative;
+  overflow: hidden;
+  transition: transform 2.5s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+.bsb-slice {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 0.75rem;
+  color: white;
+  clip-path: polygon(50% 50%, 100% 0, 100% 100%);
+  transform-origin: 50% 50%;
+}
+
+/* 4 Rebanadas */
+.bsb-slice:nth-child(1) { transform: rotate(0deg); background: #ff4757; }
+.bsb-slice:nth-child(2) { transform: rotate(90deg); background: #2ed573; }
+.bsb-slice:nth-child(3) { transform: rotate(180deg); background: #1e90ff; }
+.bsb-slice:nth-child(4) { transform: rotate(270deg); background: #ffa502; }
+
+.bsb-wheel-pointer {
+  position: absolute;
+  top: -10px;
+  left: calc(50% - 10px);
+  color: white;
+  font-size: 1.5rem;
+  z-index: 10;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Modal Pregunta */
+.bsb-question-modal {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: var(--space-md);
+}
+
+.bsb-question-modal.visible {
+  display: flex;
+}
+
+.bsb-modal-content {
+  background: var(--bg-card);
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid rgba(0,245,212,0.2);
+}
+
+.bsb-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.bsb-opt-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bsb-opt-btn:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.diff-Hit { background: #ff4757 !important; color: white; }
+.diff-Doble { background: #2ed573 !important; color: white; }
+.diff-Triple { background: #1e90ff !important; color: white; }
+.diff-HomeRun { background: #ffa502 !important; color: white; }
+
+.bsb-game-over {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  gap: var(--space-md);
+  text-align: center;
+}
+
 /* Globo */
 .balloon {
   position: absolute;

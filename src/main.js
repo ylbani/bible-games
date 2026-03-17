@@ -20,6 +20,7 @@ import { renderStories } from './games/stories/stories.js';
 import { renderHangman } from './games/hangman/hangman.js';
 import { renderBibleBattle } from './games/bible-battle/bible_battle.js';
 import { renderBalloonPop } from './games/bible-balloon-pop/balloon_pop.js';
+import { renderBaseball } from './games/baseball/baseball.js';
 
 // === Register Games ===
 registerGame({
@@ -101,6 +102,15 @@ registerGame({
   description: 'Explotar globos con respuestas correctas',
   difficulty: 'fácil',
   render: renderBalloonPop
+});
+
+registerGame({
+  id: 'baseball',
+  name: 'Béisbol Cristiano',
+  icon: '⚾',
+  description: 'Gira la ruleta y responde preguntas bíblicas para correr las bases y anotar carreras.',
+  difficulty: 'Media',
+  render: renderBaseball
 });
 
 // === Register Routes ===
