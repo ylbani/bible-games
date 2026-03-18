@@ -1,6 +1,6 @@
 {
-  "name": "Bible Games Collection",
-  "short_name": "Bible Games",
+  "name": "Bible Quest",
+  "short_name": "Bible Quest",
   "description": "Colección de mini juegos cristianos basados en la Biblia",
   "start_url": "/",
   "display": "standalone",
