@@ -133,7 +133,7 @@ registerRoute('game', (container, options) => {
 // === Navigation UI ===
 const navScreens = ['home', 'verse', 'profile', 'achievements', 'settings'];
 const gameTitles = {
-  home: 'Bible Games',
+  home: 'Bible Quest',
   verse: 'Versículo del Día',
   profile: 'Mi Perfil',
   achievements: 'Logros',

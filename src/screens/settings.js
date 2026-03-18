@@ -68,7 +68,7 @@ export function renderSettings(container) {
         <div class="settings-item">
           <div class="settings-item-left">
             <span class="settings-icon">📖</span>
-            <span>Bible Games Collection</span>
+            <span>Bible Quest</span>
           </div>
           <div class="settings-item-right">
             <span class="text-muted">PWA</span>
@@ -86,7 +86,7 @@ export function renderSettings(container) {
 
       <div class="settings-footer">
         <p>Hecho con ❤️ y ✝️</p>
-        <p class="text-sm text-muted">Bible Games Collection © ${new Date().getFullYear()}</p>
+        <p class="text-sm text-muted">Bible Quest © ${new Date().getFullYear()}</p>
       </div>
     </div>
   `;
