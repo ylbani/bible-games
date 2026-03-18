@@ -1086,3 +1086,22 @@
   margin-top: var(--space-xs);
   font-weight: var(--font-weight-bold);
 }
+
+.game-card-disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  filter: grayscale(0.5);
+  pointer-events: none;
+}
+
+.online-badge {
+  font-size: 0.65rem;
+  background: rgba(67, 97, 238, 0.15);
+  color: #4361ee;
+  border: 1px solid rgba(67, 97, 238, 0.3);
+  padding: 3px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+  font-weight: 600;
+}

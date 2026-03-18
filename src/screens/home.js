@@ -52,13 +52,18 @@ export function renderHome(container) {
 
       <div class="section-title">🎮 Juegos</div>
       <div class="games-grid">
-        ${games.map((game, i) => `
-          <div class="game-card" data-game-id="${game.id}">
+        ${games.map((game, i) => {
+          const isOnlineOnly = ['bible-battle', 'baseball'].includes(game.id);
+          const isOffline = !navigator.onLine;
+          const isDisabled = isOnlineOnly && isOffline;
+          
+          return `
+          <div class="game-card ${isDisabled ? 'game-card-disabled' : ''}" data-game-id="${game.id}">
             <div class="game-card-icon" style="background: ${gameColors[i % gameColors.length]}">
               ${game.icon}
             </div>
             <div class="game-card-info">
-              <h3>${game.name}</h3>
+              <h3>${game.name} ${isOnlineOnly ? '<span class="online-badge">🌐 En Línea</span>' : ''}</h3>
               <p>${game.description}</p>
               <div class="game-card-meta">
                 <span class="badge badge-${game.difficulty}">${game.difficulty === 'easy' ? 'Fácil' : game.difficulty === 'medium' ? 'Medio' : 'Difícil'}</span>
@@ -69,7 +74,8 @@ export function renderHome(container) {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </div>
           </div>
-        `).join('')}
+          `;
+        }).join('')}
       </div>
 
       <div class="section-title mt-xl">🏆 Ranking</div>
@@ -83,6 +89,17 @@ export function renderHome(container) {
   container.querySelectorAll('.game-card').forEach(card => {
     card.addEventListener('click', () => {
       const gameId = card.dataset.gameId;
+      const isOnlineOnly = ['bible-battle', 'baseball'].includes(gameId);
+      
+      if (isOnlineOnly && !navigator.onLine) {
+         if (typeof showToast === 'function') {
+            showToast('Este juego requiere conexión a internet 🌐', 'error');
+         } else {
+            alert('Este juego requiere conexión a internet 🌐');
+         }
+         return;
+      }
+      
       navigate('game', { gameId });
     });
   });

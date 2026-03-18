@@ -195,9 +195,11 @@ window.nativeGoogleLogin = async (idToken) => {
     savePlayer();
     await syncPlayerWithFirestore();
     
-    // Forzar recarga o alerta para pintar el Dashboard
+    // Forzar recarga con Timestamp para romper caché de WebView y actualizar perfil
     if (typeof showToast === 'function') showToast('¡Sesión Iniciada!', 'success');
-    window.location.reload(); 
+    
+    const baseUrl = window.location.origin + window.location.pathname;
+    window.location.href = `${baseUrl}?t=${Date.now()}#profile`;
   } catch (e) {
     console.error("Native Auth Error:", e);
   }
