@@ -1849,33 +1849,51 @@
   flex-direction: column;
   height: 100%;
   gap: var(--space-md);
-  padding: var(--space-md);
+  padding: var(--space-xs) var(--space-md) !important; /* Margen simétrico a los lados */
 }
 
-.bsb-hud {
+.bsb-scoreboard-container {
   padding: var(--space-md);
   border-radius: var(--radius-lg);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.bsb-score-board {
-  display: flex;
-  gap: var(--space-lg);
-  align-items: center;
+.bsb-scoreboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  color: white;
+  text-align: center;
 }
 
-.bsb-team {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.bsb-scoreboard-table th, .bsb-scoreboard-table td {
+  padding: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.bsb-team-name { font-size: 0.8rem; color: var(--text-secondary); }
-.bsb-team-runs { font-size: 1.8rem; font-weight: 800; color: var(--primary-light); }
+.bsb-scoreboard-table th {
+  font-weight: bold;
+  opacity: 0.8;
+  color: #00f5d4;
+}
 
-.bsb-divider { font-style: italic; opacity: 0.5; }
+.bsb-scoreboard-table td strong {
+  color: #00f5d4;
+  font-size: 1rem;
+}
+
+.active-batting {
+  background: rgba(0, 245, 212, 0.1);
+}
+
+.bsb-game-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
 
 .bsb-field-container {
   flex: 1;
@@ -1884,12 +1902,14 @@
   align-items: center;
   position: relative;
   min-height: 300px;
+  margin-bottom: 25px; /* Evita que el puntero tape Home en móvil */
 }
 
 .bsb-diamond {
   position: relative;
-  width: 240px;
-  height: 240px;
+  width: 80%;
+  max-width: 260px;
+  aspect-ratio: 1;
   background: rgba(34, 139, 34, 0.4); /* Césped */
   transform: rotate(45deg);
   border: 4px solid var(--primary-light);
@@ -1923,10 +1943,11 @@
   box-shadow: 0 0 10px var(--accent-color);
 }
 
-.edge-top { top: -18px; left: calc(50% - 18px); }
-.edge-left { left: -18px; top: calc(50% - 18px); }
-.edge-right { right: -18px; top: calc(50% - 18px); }
-.edge-bottom { bottom: -18px; left: calc(50% - 18px); }
+.pos-2b { top: -18px; left: -18px; }
+.pos-1b { top: -18px; right: -18px; }
+.pos-home { bottom: -18px; right: -18px; }
+.pos-3b { bottom: -18px; left: -18px; }
+
 
 .bsb-base.batting {
   background: #ff4757;
@@ -1965,20 +1986,18 @@
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end; /* Corregido para evitar superposición en el centro */
   align-items: center;
+  padding-right: 15px; /* Offset del texto para que no toque el borde */
   font-weight: bold;
   font-size: 0.75rem;
   color: white;
-  clip-path: polygon(50% 50%, 100% 0, 100% 100%);
+  clip-path: polygon(50% 50%, 100% 21.13%, 100% 78.87%);
   transform-origin: 50% 50%;
 }
 
 /* 4 Rebanadas */
-.bsb-slice:nth-child(1) { transform: rotate(0deg); background: #ff4757; }
-.bsb-slice:nth-child(2) { transform: rotate(90deg); background: #2ed573; }
-.bsb-slice:nth-child(3) { transform: rotate(180deg); background: #1e90ff; }
-.bsb-slice:nth-child(4) { transform: rotate(270deg); background: #ffa502; }
+
 
 .bsb-wheel-pointer {
   position: absolute;
@@ -2286,4 +2305,267 @@
   border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
+}
+
+/* --- DISEÑO RESPONSIVO (TABLETAS) --- */
+@media (orientation: landscape) {
+  .bsb-game {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr; /* Columna Izquierda: Pizarra+Control, Derecha: Campo */
+    grid-template-areas: 
+      "score field"
+      "wheel field";
+    gap: var(--space-lg);
+    align-items: center;
+    max-height: 100vh;
+  }
+  .bsb-scoreboard-container { grid-area: score; }
+  .bsb-field-container { grid-area: field; margin-bottom: 0; }
+  .bsb-controls { grid-area: wheel; }
+  
+  /* Reset overlay en Horizontal */
+  .bsb-roulette-overlay {
+    position: static !important;
+    background: none !important;
+    opacity: 1 !important; pointer-events: auto !important;
+    width: auto !important; height: auto !important;
+    z-index: 1 !important;
+  }
+  
+  .bsb-roulette-wrapper {
+    padding: 0 !important;
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+  .bsb-roulette-container {
+    width: 220px !important;
+    height: 220px !important;
+  }
+  #bsb-spin-btn {
+    display: none !important;
+  }
+}
+
+/* Forzar horizontal por clase (Manual) */
+.bsb-game.bsb-style-horizontal {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  grid-template-areas: 
+    "score field"
+    "wheel field";
+  gap: var(--space-lg);
+  align-items: center;
+  max-height: 100vh;
+}
+.bsb-style-horizontal .bsb-scoreboard-container { grid-area: score; }
+.bsb-style-horizontal .bsb-field-container { grid-area: field; margin-bottom: 0; }
+.bsb-style-horizontal .bsb-controls { grid-area: wheel; }
+.bsb-style-horizontal #bsb-spin-btn {
+  display: none !important;
+}
+.bsb-game.bsb-style-horizontal .bsb-roulette-overlay {
+  position: static !important;
+  background: none !important;
+  opacity: 1 !important; pointer-events: auto !important;
+  width: auto !important; height: auto !important;
+  z-index: 1 !important;
+}
+.bsb-game.bsb-style-horizontal .bsb-roulette-wrapper {
+  padding: 0 !important;
+  border: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+.bsb-game.bsb-style-horizontal .bsb-roulette-container {
+  width: 220px !important;
+  height: 220px !important;
+}
+
+/* --- DISEÑO 100% ANCHO EDGE-TO-EDGE --- */
+#app:has(.bsb-game) {
+  max-width: 100% !important;
+}
+
+#app:has(.bsb-game) .main-content {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* --- EFECTO VISUAL GRANDE --- */
+.bsb-overlay-effect {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10001;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease-in-out;
+}
+.bsb-overlay-effect.active { opacity: 1; pointer-events: auto; }
+.bsb-overlay-effect h1 {
+  font-size: 3.5rem; color: #ffa502; text-shadow: 0 0 25px #ff4757;
+  transform: scale(0.3); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.bsb-overlay-effect.active h1 { transform: scale(1); }
+
+/* --- OVERLAY DE RULETA (MODAL EN MÓVIL) --- */
+.bsb-roulette-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10000;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.bsb-roulette-overlay.active {
+  opacity: 1; pointer-events: auto;
+}
+
+.bsb-roulette-wrapper {
+  padding: var(--space-lg);
+  display: flex; flex-direction: column; align-items: center;
+  background: rgba(20, 20, 35, 0.95);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--color-primary);
+  box-shadow: 0 0 30px rgba(0,245,212,0.3);
+}
+
+.bsb-roulette-overlay .bsb-roulette-container {
+  width: 260px !important;
+  height: 260px !important;
+}
+
+/* ---- WORD SEARCH LANDSCAPE LAYOUT ---- */
+@media (min-width: 1024px) {
+  .word-search-game {
+    display: grid !important;
+    grid-template-columns: 240px 1fr !important;
+    grid-template-areas: 
+      "header header"
+      "words grid"
+      "footer footer" !important;
+    gap: var(--space-xl) !important;
+    max-height: calc(100vh - 120px) !important;
+    align-items: start !important;
+  }
+  
+  .ws-header { 
+    grid-area: header; 
+    margin-bottom: var(--space-xs) !important; 
+  }
+
+  .ws-words-list {
+    grid-area: words;
+    display: flex !important;
+    flex-direction: column !important;
+    align-content: flex-start !important;
+    flex-wrap: wrap !important;
+    max-height: 460px !important;
+    gap: var(--space-xs) !important;
+    justify-content: flex-start !important;
+    overflow-y: auto !important;
+  }
+  
+  .ws-word {
+    width: 100% !important;
+    text-align: left !important;
+  }
+
+  .ws-grid {
+    grid-area: grid;
+    max-width: 100% !important;
+    max-height: calc(100vh - 140px) !important;
+    aspect-ratio: 1 !important;
+    margin: 0 auto !important;
+    padding: var(--space-xs) !important;
+  }
+
+  .ws-cell {
+    font-size: 1.3rem !important;
+  }
+
+  .word-search-game > p {
+    grid-area: footer;
+    margin-top: 0 !important;
+  }
+}
+
+/* ---- HANGMAN LANDSCAPE LAYOUT ---- */
+@media (min-width: 1024px) {
+  .hangman-game {
+    display: grid !important;
+    grid-template-columns: 280px 1fr 420px !important;
+    grid-template-areas: 
+      "header header header"
+      "gallows hint keyboard"
+      "gallows word keyboard" !important;
+    gap: var(--space-md) var(--space-lg) !important;
+    max-height: calc(100vh - 120px) !important;
+    align-items: center !important;
+    max-width: none !important;
+    width: 100% !important;
+    position: static !important;
+    padding: 0 !important;
+  }
+
+  .hm-header { 
+    grid-area: header; 
+    margin-bottom: 0 !important;
+    padding: 0 var(--space-md) !important;
+  }
+
+  .hm-gallows { 
+    grid-area: gallows; 
+    grid-row: 2 / span 2 !important; 
+    justify-self: center !important;
+    margin: 0 !important; 
+    position: static !important;
+  }
+
+  .hm-hint-container { 
+    grid-area: hint; 
+    text-align: center !important;
+    margin-bottom: var(--space-xs) !important;
+    position: static !important;
+    max-width: 480px !important;
+    margin: 0 auto !important;
+  }
+
+  .hm-word-display { 
+    grid-area: word; 
+    justify-content: center !important;
+    margin-top: 0 !important; 
+    margin-bottom: var(--space-md) !important;
+    position: static !important;
+  }
+
+  .hm-keyboard { 
+    grid-area: keyboard; 
+    grid-row: 2 / span 2 !important; 
+    justify-self: center !important;
+    max-width: 420px !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    margin: 0 !important;
+    position: static !important;
+  }
+
+  .gallows-svg {
+    transform: scale(1.6) !important;
+    transform-origin: center center !important;
+  }
+
+  .hm-letter-box {
+    font-size: 2.2rem !important;
+    width: 44px !important;
+    height: 54px !important;
+    margin: 0 4px !important;
+  }
+
+  .btn-keyboard {
+    font-size: 1.3rem !important;
+  }
 }
